@@ -146,7 +146,7 @@ cleanup:
 
 static
 status_t
-receive_data(int sock, char *buffer, size_t buffer_size) {
+receive_data(int sock, void *buffer, size_t buffer_size) {
     status_t retval = UNINITIALIZED;
     size_t total_bytes_received = 0;
     size_t current_bytes_received = 0;
@@ -159,7 +159,7 @@ receive_data(int sock, char *buffer, size_t buffer_size) {
     }
 
     while(total_bytes_received != buffer_size) {
-        current_bytes_received = read(sock, &(buffer)+total_bytes_received, buffer_size - total_bytes_received);
+        current_bytes_received = recv(sock, inner_buffer+total_bytes_received, buffer_size - total_bytes_received, 0);
         total_bytes_received += current_bytes_received;
 
         if(current_bytes_received == -1) {
@@ -175,7 +175,6 @@ receive_data(int sock, char *buffer, size_t buffer_size) {
 cleanup:
     SAFE_FREE(inner_buffer);
     return retval;
-
 }
 
 status_t
@@ -184,7 +183,7 @@ comms__receive_message(int sock, comms__protocol_t *message) {
     comms__protocol_header_t header = {0};
     comms__protocol_body_t body = {0};
 
-    if(SUCCESS != receive_data(sock, (char *)&header, sizeof(header))) {
+    if(SUCCESS != receive_data(sock, &header, sizeof(header))) {
         goto cleanup;
     }
     header.magic = htonl(header.magic);
@@ -196,7 +195,7 @@ comms__receive_message(int sock, comms__protocol_t *message) {
         goto cleanup;
     }
 
-    if(SUCCESS != receive_data(sock, (char *)&body, header.body_length)) {
+    if(SUCCESS != receive_data(sock, &body, header.body_length)) {
         goto cleanup;
     }
 
