@@ -1,5 +1,7 @@
 #pragma once
 
+#define INVALID_FD (-1)
+
 #define ARRAY_LENGTH(_arr) (sizeof((_arr))/sizeof((_arr)[0]))
 #define STRING_LENGTH(_str) (ARRAY_LENGTH((_str)) - 1)
 
@@ -14,5 +16,12 @@
 							if((_fp) != NULL) {\
                                 (void)fclose((_fp));\
 								(_fp) = NULL;\
+							}\
+						} while(0)
+
+#define SAFE_CLOSE(_fd) do {\
+							if((_fd) != INVALID_FD) {\
+                                (void)close((_fd));\
+								(_fd) = INVALID_FD;\
 							}\
 						} while(0)

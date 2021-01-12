@@ -10,9 +10,7 @@
 status_t
 shell__get_input(char *command, int command_buffer_size) {
 	status_t retval = UNINITIALIZED;
-	ssize_t command_length = -1;
 	char *buffer = NULL;
-	size_t inner_command_buffer_size = 0;
 
 	buffer = (char *)malloc(command_buffer_size);
 	if(NULL == buffer) {
@@ -39,7 +37,6 @@ cleanup:
 status_t
 shell__parse_command(char *command, commands__command_type_t *command_type, size_t *payload_index) {
     size_t request_length = -1;
-    size_t actual_command_size = -1;
     size_t i = -1;
     status_t retval = UNINITIALIZED;
     char *request = NULL;
